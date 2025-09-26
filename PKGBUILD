@@ -169,7 +169,7 @@ fi
 
 pkgbase="linux-$_pkgsuffix"
 _major=6.16
-_minor=8
+_minor=9
 #_minorc=$((_minor+1))
 #_rcver=rc8
 pkgver=${_major}.${_minor}
@@ -207,7 +207,7 @@ conflicts=('apple-gmux-t2-dkms-git')
 replaces=('apple-gmux-t2-dkms-git')
 
 # T2 patches hash
-T2_PATCH_HASH=6b41c3fd65913e0fa3592ad16ff4a3a5b01efc7a
+T2_PATCH_HASH=31cb76636a6c0fff84ae63b7fd4b36f8c227774b
 
 _patchsource="https://raw.githubusercontent.com/cachyos/kernel-patches/master/${_major}"
 _nv_ver=580.76.05
@@ -305,24 +305,24 @@ prepare() {
         mv $srcdir/patches/*.patch $srcdir/
         for patch_file in $t2linux_patches; do
             echo "Applying T2 patch $patch_file..."
-            
+
             # Try dry run first to detect conflicts
             if ! patch -Np1 --dry-run < "../$patch_file" >/dev/null 2>&1; then
                 echo "Warning: Patch $patch_file has conflicts - checking type..."
-                
+
                 # Check if files already exist (can skip safely)
                 if patch -Np1 --dry-run < "../$patch_file" 2>&1 | grep -q "which already exists"; then
                     echo "Skipping $patch_file - files already created by CachyOS patches"
                     continue
                 fi
-                
+
                 # Check if hunks failed (version mismatch - likely non-critical)
                 if patch -Np1 --dry-run < "../$patch_file" 2>&1 | grep -q "FAILED\|failed"; then
                     echo "Warning: $patch_file has failed hunks (kernel version mismatch)"
                     echo "Skipping non-critical patch $patch_file"
                     continue
                 fi
-                
+
                 echo "Unknown conflict in $patch_file - attempting forced apply"
                 patch -Np1 --forward --reject-file=- < "../$patch_file" || echo "Skipped $patch_file"
             else
@@ -341,9 +341,9 @@ prepare() {
         src="${src%.zst}"
         [[ $src = *.patch ]] || continue
         [[ $src = *t2* ]] && continue  # Skip T2 patches (already applied)
-        
+
         echo "Applying CachyOS patch $src..."
-        
+
         # Apply with conflict detection like T2 patches
         if ! patch -Np1 --dry-run < "../$src" >/dev/null 2>&1; then
             echo "Warning: CachyOS patch $src has conflicts - attempting forced apply"
@@ -867,9 +867,9 @@ for _p in "${pkgname[@]}"; do
     }"
 done
 
-b2sums=('bef910dbda65c45d5b5722277aa1199aa09bf3684ed3703512c384becedc394fa35c8f0813ed21071ad4f9462fcd17e5b2080d165d785a1181dec6e0aee66303'
+b2sums=('b511b1be8668ff8d07cd0b87416b8acb496d23cf448cb270db7380444a8f02d36ef3df732dfbf893c60d9e8f260891e47d2befa789f9f161034cc6daf615a523'
         '5cbb50c08e4917ea2771f984a39353e955e3e76cb82ddc04835794c97606a7b2ff3f09ccfcb6d108a0ab04a0cabd983171259beecceea4b2e5cd8494c5037b13'
-        '06356360229123de607261705f64e6c7c1b903a48536161070a233121808c736407518b49b3088c13acdfecfda37ffcc21da216c67494293ec0846964005805b'
-        '3189a12e43019d9a3ed63ccc8905a66b59671b5e677f2df16a82a733462b13dc3ae5bf4e1bdb404d6defb02c85d430d6610476341fc24412281a54c9c5af435e'
+        '3daf8e77a748e7733838213d7cb6a42f845c6951cf5327dfda0285390058295cf0961db96db75ddf8708fd79c6f4893e26598b5428334ea150fcb326dd6c2ddb'
+        'b48914068d67921a2c3da154f4a556c00178054bf03148aa81636bd71bed0be4a9e2694a6e4a76b3b4965534fcabf77ab0962b3e4a414bdf04d5e6809eae7aaf'
         'c7294a689f70b2a44b0c4e9f00c61dbd59dd7063ecbe18655c4e7f12e21ed7c5bb4f5169f5aa8623b1c59de7b2667facb024913ecb9f4c650dabce4e8a7e5452'
         '032384c26aab85ff40d9e51a995d7670ddb40f34342163e162f14c9c0fd521b6405585087666666defe30b170615f9c4cb8523f0ae81ef6cacf71349bb710710')
